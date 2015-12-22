@@ -55,3 +55,660 @@ __history/
 
 # Castalia statistics file
 *.stat
+
+unit Unit1;
+
+interface
+
+uses
+  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Dialogs, ComCtrls, ToolWin, Excel2000, OleServer, StdCtrls, ExtCtrls,
+  CheckLst, ExcelXP;
+
+type
+  TForm1 = class(TForm)
+    ExcelApplication1: TExcelApplication;
+    ExcelWorkbook1: TExcelWorkbook;
+    ExcelWorksheet1: TExcelWorksheet;
+    ToolBar1: TToolBar;
+    ToolButton1: TToolButton;
+    ToolButton2: TToolButton;
+    ToolButton3: TToolButton;
+    ToolButton4: TToolButton;
+    StatusBar1: TStatusBar;
+    OpenDialog1: TOpenDialog;
+    GroupBox1: TGroupBox;
+    FontDialog1: TFontDialog;
+    GroupBox3: TGroupBox;
+    Label2: TLabel;
+    Edit1: TEdit;
+    Button1: TButton;
+    Button2: TButton;
+    Button3: TButton;
+    Panel1: TPanel;
+    Edit2: TEdit;
+    Label1: TLabel;
+    Edit3: TEdit;
+    Button4: TButton;
+    Button5: TButton;
+    GroupBox2: TGroupBox;
+    Label3: TLabel;
+    ComboBox1: TComboBox;
+    Label4: TLabel;
+    ComboBox2: TComboBox;
+    Button6: TButton;
+    ColorDialog1: TColorDialog;
+    GroupBox4: TGroupBox;
+    Edit4: TEdit;
+    Button7: TButton;
+    CheckBox1: TCheckBox;
+    CheckBox2: TCheckBox;
+    CheckBox3: TCheckBox;
+    CheckBox4: TCheckBox;
+    CheckBox5: TCheckBox;
+    CheckBox6: TCheckBox;
+    CheckBox7: TCheckBox;
+    CheckBox8: TCheckBox;
+    GroupBox5: TGroupBox;
+    CheckListBox1: TCheckListBox;
+    CheckListBox2: TCheckListBox;
+    ToolButton5: TToolButton;
+    SaveDialog1: TSaveDialog;
+    GroupBox6: TGroupBox;
+    Label5: TLabel;
+    Edit5: TEdit;
+    Label6: TLabel;
+    Edit6: TEdit;
+    Label7: TLabel;
+    Edit7: TEdit;
+    Label8: TLabel;
+    Edit8: TEdit;
+    Button8: TButton;
+    Button9: TButton;
+    Label9: TLabel;
+    Label10: TLabel;
+    ComboBox3: TComboBox;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    ComboBox4: TComboBox;
+    ComboBox5: TComboBox;
+    ComboBox6: TComboBox;
+    ComboBox7: TComboBox;
+    ComboBox8: TComboBox;
+    procedure prnsetup;
+    procedure whenopen(open_type:boolean);
+    procedure FormCreate(Sender: TObject);
+    procedure ToolButton1Click(Sender: TObject);
+    procedure ToolButton3Click(Sender: TObject);
+    procedure ToolButton4Click(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure Button3Click(Sender: TObject);
+    procedure Button4Click(Sender: TObject);
+    procedure Button5Click(Sender: TObject);
+    procedure ComboBox1Change(Sender: TObject);
+    procedure ComboBox2Change(Sender: TObject);
+    procedure Button6Click(Sender: TObject);
+    procedure Button7Click(Sender: TObject);
+    procedure CheckBox1Click(Sender: TObject);
+    procedure CheckBox2Click(Sender: TObject);
+    procedure CheckBox3Click(Sender: TObject);
+    procedure CheckBox4Click(Sender: TObject);
+    procedure CheckBox5Click(Sender: TObject);
+    procedure CheckBox6Click(Sender: TObject);
+    procedure CheckBox8Click(Sender: TObject);
+    procedure CheckBox7Click(Sender: TObject);
+    procedure Edit4KeyPress(Sender: TObject; var Key: Char);
+    procedure ExcelWorksheet1SelectionChange(Sender: TObject;
+      var Target: OleVariant);
+    procedure CheckListBox1Click(Sender: TObject);
+    procedure CheckListBox1ClickCheck(Sender: TObject);
+    procedure CheckListBox2ClickCheck(Sender: TObject);
+    procedure ToolButton5Click(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure ExcelWorkbook1BeforeClose(Sender: TObject;
+      var Cancel: OleVariant);
+    procedure Edit5Change(Sender: TObject);
+    procedure Button8Click(Sender: TObject);
+    procedure Button9Click(Sender: TObject);
+  private
+    { Private declarations }
+  public
+    { Public declarations }
+    lcid: integer;
+    appcon:boolean;
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.dfm}
+procedure TForm1.prnsetup;
+var s:string;
+    i:integer;
+begin
+   with ExcelWorksheet1.PageSetup do
+   begin
+      if pos('$',edit5.Text)=0 then
+         Edit5.text:='$'+Edit5.text;
+      if pos('$',edit6.Text)=0 then
+         Edit6.text:='$'+Edit6.text;
+      PrintTitleRows := Edit5.Text+':'+Edit6.Text;
+      i:=pos('$',edit7.text);
+      if i=0 then
+      begin
+         s:=edit7.text;
+         i:=1;
+         while (s[i]>'9') and (i<length(s)) do
+            i:=i+1;
+         Edit7.text:='$'+copy(edit7.text,1,i-1)+'$'+copy(edit7.text,i,length(edit7.text)-i+1);
+      end;
+      i:=pos('$',edit8.text);
+      if i=0 then
+      begin
+         s:=edit8.text;
+         i:=1;
+         while (s[i]>'9') and (i<length(s)) do
+            i:=i+1;
+         Edit8.text:='$'+copy(edit8.text,1,i-1)+'$'+copy(edit8.text,i,length(edit8.text)-i+1);
+      end;
+      PrintArea:=Edit7.Text+':'+Edit8.Text;
+      LeftHeader:=ComboBox3.Text;
+      LeftFooter:=ComboBox4.Text;
+      CenterHeader:=ComboBox5.Text;
+      CenterFooter:=ComboBox6.Text;
+      RightHeader:=ComboBox7.Text;
+      RightFooter:=ComboBox8.Text;
+   end;
+end;
+
+procedure TForm1.whenopen(open_type:boolean);
+var s:string;
+    i:integer;
+    _index:OleVariant;
+begin
+   ToolButton3.Enabled:=not open_type;
+   ToolButton4.Enabled:=not open_type;
+   ToolButton5.Enabled:=open_type;
+   GroupBox1.Enabled:=open_type;
+   Button3Click(nil);
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+var i:integer;
+    _index:OleVariant;
+    s:string;
+begin
+   lcid := GetUserDefaultLCID;
+   try
+      ExcelApplication1.Connect;
+      ExcelApplication1.Visible[lcid]:=True;
+      ToolButton1.Down:=True;
+      for i:=1 to ExcelApplication1.CommandBars.Count do
+      begin
+         _index:=i;
+         s:=ExcelApplication1.CommandBars.Item[_index].Name+';'+ExcelApplication1.CommandBars.Item[_index].NameLocal;
+         CheckListBox1.Items.Add(s);
+         CheckListBox1.Checked[CheckListBox1.Items.Count-1]:=ExcelApplication1.CommandBars.Item[_index].Enabled;
+      end;
+   except
+      showmessage('無法連上Excel');
+   end;
+end;
+
+procedure TForm1.ToolButton1Click(Sender: TObject);
+begin
+   ExcelApplication1.Visible[lcid]:=ToolButton1.Down;
+end;
+
+procedure TForm1.ToolButton3Click(Sender: TObject);
+var _Template:Olevariant;
+begin
+   _Template:=xlWBATWorksheet;
+   ExcelWorkbook1.ConnectTo(ExcelApplication1.Workbooks.Add(_Template, lcid));
+   ExcelWorksheet1.ConnectTo(ExcelWorkbook1.Worksheets[1] as _Worksheet);
+   ExcelWorksheet1.Name := 'Data';
+   whenopen(true);
+   StatusBar1.SimpleText:='Connect Excel';
+end;
+
+procedure TForm1.ToolButton4Click(Sender: TObject);
+var Template:OleVariant;
+begin
+   if OpenDialog1.Execute then
+   begin
+      Template:=OpenDialog1.FileName;
+      ExcelWorkbook1.ConnectTo(ExcelApplication1.Workbooks.Open(template,EmptyParam,EmptyParam,
+          EmptyParam,EmptyParam,EmptyParam,EmptyParam,EmptyParam,EmptyParam,
+          EmptyParam,EmptyParam,EmptyParam,EmptyParam,Lcid));
+      ExcelWorksheet1.ConnectTo(ExcelWorkbook1.Worksheets[1] as _Worksheet);
+      whenopen(true);
+   end;
+end;
+
+procedure TForm1.Button1Click(Sender: TObject);
+var i:integer;
+    s:string;
+begin
+   if not (edit1.Text='') then
+   begin
+      s:=edit1.text;
+      i:=pos(',',s);
+      if i>0 then
+         FontDialog1.Font.Name:=copy(s,1,i-1);
+      FontDialog1.Font.Style:=[];
+      if pos('底線',s)>0 then
+         FontDialog1.Font.Style:=FontDialog1.Font.Style+[fsUnderline];
+      if pos('粗體',s)>0 then
+         FontDialog1.Font.Style:=FontDialog1.Font.Style+[fsBold];
+      if pos('斜體',s)>0 then
+         FontDialog1.Font.Style:=FontDialog1.Font.Style+[fsItalic];
+      while (i>0) do
+      begin
+         s:=copy(s,i+1,length(s)-i);
+         i:=pos(',',s);
+      end;
+      i:=pos('號字',s);
+      if i>0 then
+         FontDialog1.Font.Size:=strtoint(copy(s,1,i-1));
+   end;
+   if FontDialog1.Execute then
+   begin
+      s:=FontDialog1.Font.Name;
+      if fsUnderline in FontDialog1.Font.Style then
+         s:=s+',底線';
+      if fsBold in FontDialog1.Font.Style then
+         s:=s+',粗體';
+      if fsItalic in FontDialog1.Font.Style then
+         s:=s+',斜體';
+      s:=s+','+floattostr(FontDialog1.Font.Size)+'號字';
+      edit1.text:=s;
+   end;
+end;
+
+procedure TForm1.Button2Click(Sender: TObject);
+var s:string;
+    i:integer;
+begin
+   if not (edit1.Text='') then
+   begin
+      s:=edit1.text;
+      with (ExcelApplication1.Selection[Lcid] as Range).Font do
+      begin
+         i:=pos(',',s);
+         if i>0 then
+            Name:=copy(s,1,i-1);
+         if pos('底線',s)>0 then
+            Underline := 2;
+         if pos('粗體',s)>0 then
+            Bold := 1;
+         if pos('斜體',s)>0 then
+            Italic := 1;
+         while (i>0) do
+         begin
+            s:=copy(s,i+1,length(s)-i);
+            i:=pos(',',s);
+         end;
+         i:=pos('號字',s);
+         if i>0 then
+            Size :=strtoint(copy(s,1,i-1));
+      end;
+   end;
+end;
+
+procedure TForm1.Button3Click(Sender: TObject);
+begin
+   with (ExcelApplication1.Selection[Lcid] as Range).Font do
+   begin
+      Edit1.text:=name;
+      if Underline=2 then
+         Edit1.text:=Edit1.text+',底線';
+      if Bold= 1 then
+         Edit1.text:=Edit1.text+',粗體';
+      if Italic=1 then
+         Edit1.text:=Edit1.text+',斜體';
+      Edit1.text:=Edit1.text+','+floattostr(Size)+'號字';
+   end;
+end;
+
+procedure TForm1.Button4Click(Sender: TObject);
+var _Cell1,_Cell2:OleVariant;
+begin
+   if not (Edit2.Text='') and not (Edit3.Text='') then
+   begin
+      _Cell1:=Edit2.Text;
+      _Cell2:=Edit3.Text;
+      ExcelWorksheet1.Range[_Cell1,_Cell2].Select;
+   end;
+end;
+
+procedure TForm1.Button5Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   (ExcelApplication1.Selection[Lcid] as Range).MergeCells:=True;
+end;
+
+procedure TForm1.ComboBox1Change(Sender: TObject);
+begin
+   Button4Click(nil);
+   case ComboBox1.Items.IndexOf(Combobox1.Text) of
+      0:(ExcelApplication1.Selection[Lcid] as Range).VerticalAlignment:=xlVAlignTop;// xlVAlignTop= $FFFFEFC0;
+      1:(ExcelApplication1.Selection[Lcid] as Range).VerticalAlignment:=xlVAlignCenter; //xlVAlignCenter= $FFFFEFF4;
+      2:(ExcelApplication1.Selection[Lcid] as Range).VerticalAlignment:=xlVAlignBottom; //xlVAlignBottom= $FFFFEFF5;
+      3:(ExcelApplication1.Selection[Lcid] as Range).VerticalAlignment:=xlVAlignDistributed; //xlVAlignDistributed= $FFFFEFEB;
+      4:(ExcelApplication1.Selection[Lcid] as Range).VerticalAlignment:=xlVAlignJustify; //xlVAlignJustify= $FFFFEFDE;
+   else
+   end;
+end;
+
+procedure TForm1.ComboBox2Change(Sender: TObject);
+begin
+   Button4Click(nil);
+   case ComboBox2.Items.IndexOf(Combobox2.Text) of
+      0:(ExcelApplication1.Selection[Lcid] as Range).HorizontalAlignment:=xlHAlignLeft;
+      1:(ExcelApplication1.Selection[Lcid] as Range).HorizontalAlignment:=xlHAlignCenter;
+      2:(ExcelApplication1.Selection[Lcid] as Range).HorizontalAlignment:=xlHAlignRight;
+      3:(ExcelApplication1.Selection[Lcid] as Range).HorizontalAlignment:=xlHAlignDistributed;
+      4:(ExcelApplication1.Selection[Lcid] as Range).HorizontalAlignment:=xlHAlignFill;
+      5:(ExcelApplication1.Selection[Lcid] as Range).HorizontalAlignment:=xlHAlignGeneral;
+      6:(ExcelApplication1.Selection[Lcid] as Range).HorizontalAlignment:=xlHAlignCenterAcrossSelection;
+      7:(ExcelApplication1.Selection[Lcid] as Range).HorizontalAlignment:=xlHAlignJustify;
+   else
+   end;
+{  xlHAlignCenter = $FFFFEFF4;
+  xlHAlignCenterAcrossSelection = $00000007;
+  xlHAlignDistributed = $FFFFEFEB;
+  xlHAlignFill = $00000005;
+  xlHAlignGeneral = $00000001;
+  xlHAlignJustify = $FFFFEFDE;
+  xlHAlignLeft = $FFFFEFDD;
+  xlHAlignRight = $FFFFEFC8;}
+end;
+
+procedure TForm1.Button6Click(Sender: TObject);
+begin
+   if ColorDialog1.Execute then
+   begin
+      Button4Click(nil);
+      (ExcelApplication1.Selection[Lcid] as Range).Interior.Color:=ColorDialog1.Color;
+   end;
+end;
+
+procedure TForm1.Button7Click(Sender: TObject);
+var _Cell:OleVariant;
+begin
+   _Cell:=Edit2.Text;
+   ExcelWorksheet1.Range[_Cell,_Cell].Value:=Edit4.Text;
+end;
+
+procedure TForm1.CheckBox1Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   if TCheckBox(Sender).Checked then
+     (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlEdgeTop].LineStyle := xlContinuous
+   else
+     (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlEdgeTop].LineStyle := xlNone;
+{
+  xlContinuous = $00000001;
+  xlDash = $FFFFEFED;
+  xlDashDot = $00000004;
+  xlDashDotDot = $00000005;
+  xlDot = $FFFFEFEA;
+  xlDouble = $FFFFEFE9;
+  xlSlantDashDot = $0000000D;
+  xlLineStyleNone = $FFFFEFD2;
+}
+end;
+
+procedure TForm1.CheckBox2Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   if TCheckBox(Sender).Checked then
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlEdgeBottom].LineStyle := xlContinuous
+   else
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlEdgeBottom].LineStyle := xlNone;
+{
+xlInsideHorizontal = $0000000C;
+xlInsideVertical = $0000000B;
+xlDiagonalDown = $00000005;
+xlDiagonalUp = $00000006;
+xlEdgeBottom = $00000009;
+xlEdgeLeft = $00000007;
+xlEdgeRight = $0000000A;
+xlEdgeTop = $00000008;
+}
+end;
+
+procedure TForm1.CheckBox3Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   if TCheckBox(Sender).Checked then
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlEdgeLeft].LineStyle := xlContinuous
+   else
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlEdgeLeft].LineStyle := xlNone;
+end;
+
+procedure TForm1.CheckBox4Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   if TCheckBox(Sender).Checked then
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlEdgeRight].LineStyle := xlContinuous
+   else
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlEdgeRight].LineStyle := xlNone;
+end;
+
+procedure TForm1.CheckBox5Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   if TCheckBox(Sender).Checked then
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlInsideVertical].LineStyle := xlContinuous
+   else
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlInsideVertical].LineStyle := xlNone;
+end;
+
+procedure TForm1.CheckBox6Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   if TCheckBox(Sender).Checked then
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlInsideHorizontal].LineStyle := xlContinuous
+   else
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlInsideHorizontal].LineStyle := xlNone;
+end;
+
+procedure TForm1.CheckBox8Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   if TCheckBox(Sender).Checked then
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlDiagonalUp].LineStyle := xlContinuous
+   else
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlDiagonalUp].LineStyle := xlNone;
+end;
+
+procedure TForm1.CheckBox7Click(Sender: TObject);
+begin
+   Button4Click(nil);
+   if TCheckBox(Sender).Checked then
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlDiagonalDown].LineStyle := xlContinuous
+   else
+      (ExcelApplication1.Selection[Lcid] as Range).Borders.Item[xlDiagonalDown].LineStyle := xlNone;
+end;
+
+procedure TForm1.Edit4KeyPress(Sender: TObject; var Key: Char);
+begin
+   if key=#13 then
+      Button7.SetFocus;
+end;
+
+procedure TForm1.ExcelWorksheet1SelectionChange(Sender: TObject;
+  var Target: OleVariant);
+var s1,s2:string;
+begin
+   s1:=chr((ExcelApplication1.Selection[Lcid] as Range).Areas.Item[1].Column+64)+
+       inttostr((ExcelApplication1.Selection[Lcid] as Range).Areas.Item[1].Row);
+   s2:=chr((ExcelApplication1.Selection[Lcid] as Range).Areas.Item[1].Column+64+(ExcelApplication1.Selection[Lcid] as Range).Columns.Count-1)+
+      inttostr((ExcelApplication1.Selection[Lcid] as Range).Areas.Item[1].Row+(ExcelApplication1.Selection[Lcid] as Range).Rows.Count-1);
+   if s1=chr(ExcelApplication1.ActiveCell.Column+64)+inttostr(ExcelApplication1.ActiveCell.Row) then
+   begin
+      Edit2.text:=s1;
+      Edit3.text:=s2;
+   end else
+   begin
+      Edit2.text:=s2;
+      Edit3.text:=s1;
+   end;
+end;
+
+procedure TForm1.CheckListBox1Click(Sender: TObject);
+var i,j:integer;
+    _index1,_index2:OleVariant;
+    s:string;
+begin
+   j:=CheckListBox1.ItemIndex+1;
+   _index1:=j;
+   CheckListBox2.Items.Clear;
+   for i:=1 to ExcelApplication1.CommandBars[_index1].Controls.Count do
+   begin
+      _index2:=i;
+      s:=ExcelApplication1.CommandBars[_index1].Controls.Item[_index2].Caption+';'+ExcelApplication1.CommandBars[_index1].Controls.Item[_index2].DescriptionText;
+      CheckListBox2.Items.Add(s);
+      CheckListBox2.Checked[CheckListBox2.Items.Count-1]:=ExcelApplication1.CommandBars[_index1].Controls.Item[_index2].Enabled;
+   end;
+end;
+
+procedure TForm1.CheckListBox1ClickCheck(Sender: TObject);
+var j:integer;
+    _index1:OleVariant;
+begin
+   j:=CheckListBox1.ItemIndex+1;
+   _index1:=j;
+   ExcelApplication1.CommandBars[_index1].Set_Enabled(CheckListBox1.Checked[CheckListBox1.ItemIndex]);
+end;
+
+procedure TForm1.CheckListBox2ClickCheck(Sender: TObject);
+var j:integer;
+    _index1,_index2:OleVariant;
+begin
+   j:=CheckListBox1.ItemIndex+1;
+   _index1:=j;
+   j:=CheckListBox2.ItemIndex+1;
+   _index2:=j;
+//   ExcelApplication1.CommandBars[_index1].Controls[_index2].Set_Visible(CheckListBox2.Checked[CheckListBox2.ItemIndex]);
+   ExcelApplication1.CommandBars[_index1].Controls[_index2].Set_Enabled(CheckListBox2.Checked[CheckListBox2.ItemIndex]);
+end;
+
+procedure TForm1.ToolButton5Click(Sender: TObject);
+var _FileName,_FileFormat,_Password,_WriteResPassword,
+    _ReadOnlyRecommended,_CreateBackup:OleVariant;
+begin
+   if SaveDialog1.Execute then
+   begin
+      _FileName:=SaveDialog1.FileName;
+      _FileFormat:=xlNormal;
+      _Password:='';
+      _WriteResPassword:='';
+      _ReadOnlyRecommended:=False;
+      _CreateBackup:=False;
+      ExcelWorkBook1.SaveAs(_FileName,_FileFormat,_Password,
+         _WriteResPassword,_ReadOnlyRecommended,_CreateBackup,
+         xlNoChange,EmptyParam,EmptyParam,EmptyParam,EmptyParam,Lcid);
+   end;
+{FileFormate
+  xlAddIn = $00000012;
+  xlCSV = $00000006;
+  xlCSVMac = $00000016;
+  xlCSVMSDOS = $00000018;
+  xlCSVWindows = $00000017;
+  xlDBF2 = $00000007;
+  xlDBF3 = $00000008;
+  xlDBF4 = $0000000B;
+  xlDIF = $00000009;
+  xlExcel2 = $00000010;
+  xlExcel2FarEast = $0000001B;
+  xlExcel3 = $0000001D;
+  xlExcel4 = $00000021;
+  xlExcel5 = $00000027;
+  xlExcel7 = $00000027;
+  xlExcel9795 = $0000002B;
+  xlExcel4Workbook = $00000023;
+  xlIntlAddIn = $0000001A;
+  xlIntlMacro = $00000019;
+  xlWorkbookNormal = $FFFFEFD1;
+  xlSYLK = $00000002;
+  xlTemplate = $00000011;
+  xlCurrentPlatformText = $FFFFEFC2;
+  xlTextMac = $00000013;
+  xlTextMSDOS = $00000015;
+  xlTextPrinter = $00000024;
+  xlTextWindows = $00000014;
+  xlWJ2WD1 = $0000000E;
+  xlWK1 = $00000005;
+  xlWK1ALL = $0000001F;
+  xlWK1FMT = $0000001E;
+  xlWK3 = $0000000F;
+  xlWK4 = $00000026;
+  xlWK3FM3 = $00000020;
+  xlWKS = $00000004;
+  xlWorks2FarEast = $0000001C;
+  xlWQ1 = $00000022;
+  xlWJ3 = $00000028;
+  xlWJ3FJ3 = $00000029;
+  xlUnicodeText = $0000002A;
+  xlHtml = $0000002C;
+}
+{XlSaveAsAccessMode = TOleEnum;
+
+  xlExclusive = $00000003;
+  xlNoChange = $00000001;
+  xlShared = $00000002;
+}
+end;
+
+procedure TForm1.FormClose(Sender: TObject; var Action: TCloseAction);
+var _savechange:OleVariant;
+begin
+   _savechange:=0;
+//請注意非以下的內容,Delphi 6 在Excel2000的宣告有問題
+   try
+      if not (ToolButton3.Enabled) then
+      begin
+         ExcelWorksheet1.Disconnect;
+         ExcelWorkBook1.Close(_savechange,EmptyParam);
+      end;
+   finally
+      if ExcelApplication1.Workbooks.Count=0 then
+         ExcelApplication1.Quit;
+      ExcelApplication1.Disconnect;
+   end;
+{XlSaveAction
+ xlDoNotSaveChanges = $00000002;
+ xlSaveChanges = $00000001;
+}
+end;
+
+procedure TForm1.ExcelWorkbook1BeforeClose(Sender: TObject;
+  var Cancel: OleVariant);
+begin
+   whenopen(false);
+end;
+
+procedure TForm1.Edit5Change(Sender: TObject);
+begin
+   Edit6.Text:=Edit5.Text;
+end;
+
+procedure TForm1.Button8Click(Sender: TObject);
+begin
+   prnsetup;
+   ExcelWorksheet1.PrintPreview;
+end;
+
+procedure TForm1.Button9Click(Sender: TObject);
+begin
+   prnsetup;
+   ExcelWorksheet1.PrintOut;
+end;
+
+end.
